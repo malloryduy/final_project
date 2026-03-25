@@ -3,7 +3,8 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 # Open CSV File 
-mi
+COVID19_Outcomes_Tennessee <- read_csv("data/COVID19_Outcomes_Tennessee_by_Race_Sex.csv")
+View(COVID19_Outcomes_Tennessee)
 # Convert Date
 COVID19_Outcomes_Tennessee <- COVID19_Outcomes_Tennessee |>
   mutate(
