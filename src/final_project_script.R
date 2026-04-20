@@ -72,10 +72,36 @@ race_joined |> arrange(desc(case_rate_per_100k))
 #Which groups experiences disproportionately higher death rates relative to cases 
 ###########################################
 
+
+race_cases_deaths <- COVID19_Outcomes_clean |>
+  filter(category == "RACE", outcomes %in% c("cases", "deaths")) |>
+  select(group, date, outcomes, count) |>
+  pivot_wider(names_from = outcomes, values_from = count) |>
+  mutate(case_fatality_rate = (deaths / cases) * 100)
+
+race_cases_deaths_latest <- race_cases_deaths |>
+  group_by(group) |>
+  filter(date == max(date)) |>
+  ungroup() |>
+  arrange(desc(case_fatality_rate))
+
+race_cases_deaths_latest
+
 ###########################################
 #Which groups has the highest mortality rates after adjusting for population size? 
 ###########################################
 
+race_death_rates <- COVID19_Outcomes_clean |>
+  filter(category == "RACE", outcomes == "deaths") |>
+  left_join(population_2022, by = "group") |>
+  mutate(death_rate_per_100k = (count / population) * 100000)
 
+race_death_rates_latest <- race_death_rates |>
+  group_by(group) |>
+  filter(date == max(date)) |>
+  ungroup() |>
+  arrange(desc(death_rate_per_100k))
+
+race_death_rates_latest
 
 
