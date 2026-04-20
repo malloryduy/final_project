@@ -68,6 +68,30 @@ race_joined |> arrange(desc(case_rate_per_100k))
 #How did COVID-19 case rates by race change over time? (temporal requirement)
 ###########################################
 
+#Filter the dataset to focus only on race and case data
+race_data <- COVID19_Outcomes_clean |>
+  filter(category == "RACE", outcomes == "cases")
+
+# Summarize cases by race and date
+# Why: We combine repeated entries so each race has one total case value per week
+race_summary <- race_data |>
+  group_by(group, date) |>
+  summarise(
+    cases = sum(count, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+#Step 3: Create a time trend line graph
+ggplot(race_summary, aes(x = date, y = cases, color = group, group = group)) +
+  geom_line(linewidth = 1) +
+  theme_minimal() +
+  labs(
+    title = "COVID-19 Case Trends Over Time by Race in Tennessee",
+    x = "Date",
+    y = "Cases",
+    color = "Race"
+  )
+
 ###########################################
 #Which groups experiences disproportionately higher death rates relative to cases 
 ###########################################
