@@ -63,6 +63,7 @@ race_joined <- race_data |>
 race_joined <- race_joined |>
   mutate(case_rate_per_100k = (count / population) * 100,000)
 race_joined |> arrange(desc(case_rate_per_100k))
+#testtt
 ###########################################
 #How did COVID-19 case rates by race change over time? (temporal requirement)
 ###########################################
