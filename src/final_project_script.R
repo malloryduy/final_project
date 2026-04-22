@@ -103,7 +103,7 @@ ggplot(race_summary, aes(x = date, y = cases, color = group, group = group)) +
 
 #step 4 (line 4): reshape the data so cases and deaths are in seperate columns. Originally the cases and deaths were stacked in one column under outcomes but this step changes the data so each row has one column for cases and one column for deaths. Important because I need both values in the same row to calculate the death rate relative to cases. 
 
-#Step 5 (line 5): creates a new column called case_datality_rate. This formula is deaths divided by cases then multiplied by 100. This gives the percent of COVID cases that resulted in death for each racial group. 
+#Step 5 (line 5): creates a new column called case_fatality_rate. This formula is deaths divided by cases then multiplied by 100. This gives the percent of COVID cases that resulted in death for each racial group. 
 
 
 race_cases_deaths <- COVID19_Outcomes_clean |>
@@ -165,7 +165,7 @@ race_death_rates <- COVID19_Outcomes_clean |>
 
 #Step 7: Sort from highest to lowest. This places the group with the highest mortality rate per 100,000 at the top. 
 
-#Step 8: print final table. This shows which racial groups had the highest mortality rates after accoutning for pop. size. 
+#Step 8: print final table. This shows which racial groups had the highest mortality rates after accounting for pop. size. 
 
 race_death_rates_latest <- race_death_rates |>
   group_by(group) |>
