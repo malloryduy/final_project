@@ -2,7 +2,6 @@
 library(tidyverse)
 library(readr)
 library(ggplot2)
-library(janitor)
 # Open CSV File 
 COVID19_Outcomes_Tennessee <- read_csv("data/COVID19_Outcomes_Tennessee_by_Race_Sex.csv")
 View(COVID19_Outcomes_Tennessee)
@@ -34,9 +33,7 @@ COVID19_Outcomes_clean <- COVID19_Outcomes_clean |>
 
 # create data table with race only 
 race_data <- COVID19_Outcomes_clean |>
-  filter(category == "RACE",outcomes == "cases" ) |>
-  group_by(group) |> filter(date == max(date)) |>
-  ungroup()
+  filter(category == "RACE",outcomes == "cases" ) |> filter(date == max(date))
 #open population table and tidy 
 population_2022 <- read_csv("data/population_2022.csv")
 population_2022 <- population_2022 |>  slice(c(39, 40, 41, 46, 54, 60)) |>
@@ -44,7 +41,6 @@ population_2022 <- population_2022 |>  slice(c(39, 40, 41, 46, 54, 60)) |>
   rename( group = "Label (Grouping)", 
           population = "Tennessee!!Estimate") |>
   mutate(
-    group = str_replace_all(group, fixed("\u00A0"), " "),
     group = str_squish(group),
     population = as.numeric(population)
   ) 
@@ -59,10 +55,9 @@ population_2022 <- population_2022  |>  mutate(
     )
   ) 
 race_joined <- race_data |> 
-  left_join(population_2022, by = "group")
-race_joined <- race_joined |>
-  mutate(case_rate_per_100k = (count / population) * 100,000)
-race_joined |> arrange(desc(case_rate_per_100k))
+  left_join(population_2022, by = "group") |> 
+  mutate(case_rate_per_100k = (count / population) * 100000) |>
+  arrange(desc(case_rate_per_100k))
 
 ###########################################
 #How did COVID-19 case rates by race change over time? (temporal requirement)
