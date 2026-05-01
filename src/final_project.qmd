@@ -1,0 +1,92 @@
+---
+title: "Final_Project"
+format: html
+editor: visual
+---
+
+## COVID Outcomes in Tennessee 2020-2024
+
+## Load packages and download files
+
+```{r}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+# Open CSV File 
+COVID19_Outcomes_Tennessee <- read_csv("../data/COVID19_Outcomes_Tennessee_by_Race_Sex.csv")
+```
+
+## Tidy Data
+
+Convert Date to proper format
+
+```{r}
+COVID19_Outcomes_Tennessee <- COVID19_Outcomes_Tennessee |>
+  mutate(
+    WEEK_END_DATE = as.Date(WEEK_END_DATE, format = "%Y %b %d %I:%M:%S %p"))
+```
+
+Clean column names and pivot longer
+
+```{r}
+COVID19_Outcomes_clean <- COVID19_Outcomes_Tennessee |>
+  rename(
+    group = CAT_DETAIL,
+    date = WEEK_END_DATE,
+    cases = CAT_TOTALCASES,
+    deaths = CAT_TOTALDEATHS,
+    hospitalizations = CAT_TOTALHOSP,
+    category = CATEGORY
+  )
+
+COVID19_Outcomes_clean <- COVID19_Outcomes_clean |>
+  pivot_longer(
+    cols = c(cases, deaths, hospitalizations),
+    names_to = "outcomes",
+    values_to = "count"
+  )
+```
+
+# Questions
+
+## Which racial group had the highest total COVID-19 cases per population?
+
+Create a table with race only
+
+```{r}
+race_data <- COVID19_Outcomes_clean |>
+  filter(category == "RACE",outcomes == "cases" ) |> filter(date == max(date))
+```
+
+Open population table and tidy
+
+```{r}
+population_2022 <- read_csv("../data/population_2022.csv")
+population_2022 <- population_2022 |>  slice(c(39, 40, 41, 46, 54, 60)) |>
+  select("Label (Grouping)", "Tennessee!!Estimate") |>
+  rename( group = "Label (Grouping)", 
+          population = "Tennessee!!Estimate") |>
+  mutate(
+    group = str_squish(group),
+    population = as.numeric(population)
+  ) 
+population_2022 <- population_2022  |>  mutate(
+    group = case_when(
+      group == "White" ~ "White",
+      group == "Black or African American" ~ "Black or African American",
+      group == "American Indian and Alaska Native" ~ "American Indian or Alaska Native",
+      group == "Asian" ~ "Asian",
+      group == "Native Hawaiian and Other Pacific Islander" ~ "Native Hawaiian or Other Pacific Islander",
+      group == "Two or More Races" ~ "Other/Multiracial"
+    )
+  ) 
+```
+
+Join the data and arrange in descending order
+
+```{r}
+race_joined <- race_data |> 
+  left_join(population_2022, by = "group") |> 
+  mutate(case_rate_per_100k = (count / population) * 100000) |>
+  arrange(desc(case_rate_per_100k))
+```
