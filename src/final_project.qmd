@@ -103,18 +103,45 @@ Filter for gender only
 ```{r}
 gender_data <- COVID19_Outcomes_clean |>
   filter(category == "SEX",
-         outcomes == c("cases", "deaths"))
+         outcomes %in% c("cases", "deaths"))
 gender_data
 ```
 
-Get the recent total
+Get most recent gender data
 
 ```{r}
-common_date <- COVID19_Outcomes_clean |>
-  filter(category == "SEX",
-         outcomes == "cases") |>
-  summarise(max_date = max(date)) |>
-  summarise(common_date = min(max_date)) |>
-  pull(common_date)
+gender_latest <- gender_data |>
+  filter(date == max(date)) 
+gender_latest
 
+```
+
+Pivot wider so cases and death are own category and calculate
+
+```{r}
+gender_wide <- gender_latest |>
+  pivot_wider(
+    names_from = outcomes,
+    values_from = count
+  )
+gender_rates <- gender_wide |>
+  mutate(
+    death_rate = deaths / cases
+  )
+gender_rates <- gender_rates |>
+  mutate(
+    death_rate_percent = death_rate * 100
+  )
+```
+
+create a visualization
+
+```{r}
+ggplot(gender_rates, aes(x = group, y = death_rate_percent)) +
+  geom_col() +
+  labs(
+    title = "COVID-19 Death Rate by Gender",
+    x = "Gender",
+    y = "Death Rate (%)"
+  )
 ```

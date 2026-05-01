@@ -290,33 +290,74 @@ num (1): Tennessee!!Estimate
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gender_data <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"SEX"</span>,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>         outcomes <span class="sc">==</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>         outcomes <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>))</span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>gender_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 756 × 5
+<pre><code># A tibble: 1,512 × 5
    group   date       category outcomes   count
    &lt;chr&gt;   &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;
  1 Female  2024-12-31 SEX      cases    1553745
  2 Female  2024-12-31 SEX      deaths     14442
- 3 Unknown 2024-12-31 SEX      cases      18050
- 4 Unknown 2024-12-31 SEX      deaths        22
- 5 Male    2024-12-28 SEX      cases    1246737
- 6 Male    2024-12-28 SEX      deaths     16689
- 7 Female  2024-12-21 SEX      cases    1552063
- 8 Female  2024-12-21 SEX      deaths     14442
- 9 Unknown 2024-12-21 SEX      cases      18047
-10 Unknown 2024-12-21 SEX      deaths        22
-# ℹ 746 more rows</code></pre>
+ 3 Male    2024-12-31 SEX      cases    1247116
+ 4 Male    2024-12-31 SEX      deaths     16689
+ 5 Unknown 2024-12-31 SEX      cases      18050
+ 6 Unknown 2024-12-31 SEX      deaths        22
+ 7 Female  2024-12-28 SEX      cases    1553197
+ 8 Female  2024-12-28 SEX      deaths     14442
+ 9 Male    2024-12-28 SEX      cases    1246737
+10 Male    2024-12-28 SEX      deaths     16689
+# ℹ 1,502 more rows</code></pre>
 </div>
 </div>
-<p>Get the recent total</p>
+<p>Get most recent gender data</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>common_date <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"SEX"</span>,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         outcomes <span class="sc">==</span> <span class="st">"cases"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_date =</span> <span class="fu">max</span>(date)) <span class="sc">|&gt;</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">common_date =</span> <span class="fu">min</span>(max_date)) <span class="sc">|&gt;</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(common_date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>gender_latest <span class="ot">&lt;-</span> gender_data <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">max</span>(date)) </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>gender_latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  group   date       category outcomes   count
+  &lt;chr&gt;   &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;
+1 Female  2024-12-31 SEX      cases    1553745
+2 Female  2024-12-31 SEX      deaths     14442
+3 Male    2024-12-31 SEX      cases    1247116
+4 Male    2024-12-31 SEX      deaths     16689
+5 Unknown 2024-12-31 SEX      cases      18050
+6 Unknown 2024-12-31 SEX      deaths        22</code></pre>
+</div>
+</div>
+<p>Pivot wider so cases and death are own category and calculate</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>gender_wide <span class="ot">&lt;-</span> gender_latest <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> outcomes,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> count</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>gender_rates <span class="ot">&lt;-</span> gender_wide <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">death_rate =</span> deaths <span class="sc">/</span> cases</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>gender_rates <span class="ot">&lt;-</span> gender_rates <span class="sc">|&gt;</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">death_rate_percent =</span> death_rate <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>create a visualization</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gender_rates, <span class="fu">aes</span>(<span class="at">x =</span> group, <span class="at">y =</span> death_rate_percent)) <span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"COVID-19 Death Rate by Gender"</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Gender"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Death Rate (%)"</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_project_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 </div>
 </section>
 </section>
