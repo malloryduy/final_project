@@ -140,26 +140,61 @@ num (3): CAT_TOTALCASES, CAT_TOTALDEATHS, CAT_TOTALHOSP
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_Tennessee <span class="ot">&lt;-</span> COVID19_Outcomes_Tennessee <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">WEEK_END_DATE =</span> <span class="fu">as.Date</span>(WEEK_END_DATE, <span class="at">format =</span> <span class="st">"%Y %b %d %I:%M:%S %p"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">WEEK_END_DATE =</span> <span class="fu">as.Date</span>(WEEK_END_DATE, <span class="at">format =</span> <span class="st">"%Y %b %d %I:%M:%S %p"</span>))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_Tennessee</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3,276 × 6
+   CAT_DETAIL              WEEK_END_DATE CATEGORY CAT_TOTALCASES CAT_TOTALDEATHS
+   &lt;chr&gt;                   &lt;date&gt;        &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;
+ 1 White                   2024-12-31    RACE            1817150           24080
+ 2 Black or African Ameri… 2024-12-31    RACE             401950            4759
+ 3 Other/Multiracial       2024-12-31    RACE             194105            1095
+ 4 Asian                   2024-12-31    RACE              28458             140
+ 5 American Indian or Ala… 2024-12-31    RACE               4897              31
+ 6 Native Hawaiian or Oth… 2024-12-31    RACE               2472              14
+ 7 Unknown                 2024-12-31    RACE             369879            1034
+ 8 Not Hispanic or Latino  2024-12-31    ETHNICI…        1887139           27831
+ 9 Hispanic                2024-12-31    ETHNICI…         111967             629
+10 Unknown                 2024-12-31    ETHNICI…         819805            2693
+# ℹ 3,266 more rows
+# ℹ 1 more variable: CAT_TOTALHOSP &lt;dbl&gt;</code></pre>
+</div>
 </div>
 <p>Clean column names and pivot longer</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_clean <span class="ot">&lt;-</span> COVID19_Outcomes_Tennessee <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> CAT_DETAIL,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> WEEK_END_DATE,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">cases =</span> CAT_TOTALCASES,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deaths =</span> CAT_TOTALDEATHS,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hospitalizations =</span> CAT_TOTALHOSP,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> CATEGORY</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_clean <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(cases, deaths, hospitalizations),</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"outcomes"</span>,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"count"</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_clean <span class="ot">&lt;-</span> COVID19_Outcomes_Tennessee <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> CAT_DETAIL,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> WEEK_END_DATE,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">cases =</span> CAT_TOTALCASES,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">deaths =</span> CAT_TOTALDEATHS,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">hospitalizations =</span> CAT_TOTALHOSP,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> CATEGORY</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_clean <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(cases, deaths, hospitalizations),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"outcomes"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"count"</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>COVID19_Outcomes_clean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9,828 × 5
+   group                     date       category outcomes           count
+   &lt;chr&gt;                     &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;
+ 1 White                     2024-12-31 RACE     cases            1817150
+ 2 White                     2024-12-31 RACE     deaths             24080
+ 3 White                     2024-12-31 RACE     hospitalizations   39896
+ 4 Black or African American 2024-12-31 RACE     cases             401950
+ 5 Black or African American 2024-12-31 RACE     deaths              4759
+ 6 Black or African American 2024-12-31 RACE     hospitalizations   11879
+ 7 Other/Multiracial         2024-12-31 RACE     cases             194105
+ 8 Other/Multiracial         2024-12-31 RACE     deaths              1095
+ 9 Other/Multiracial         2024-12-31 RACE     hospitalizations    2839
+10 Asian                     2024-12-31 RACE     cases              28458
+# ℹ 9,818 more rows</code></pre>
+</div>
 </div>
 </section>
 <section id="questions" class="level1">
@@ -168,12 +203,25 @@ num (3): CAT_TOTALCASES, CAT_TOTALDEATHS, CAT_TOTALHOSP
 <h2 class="anchored" data-anchor-id="which-racial-group-had-the-highest-total-covid-19-cases-per-population">Which racial group had the highest total COVID-19 cases per population?</h2>
 <p>Create a table with race only</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>race_data <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"RACE"</span>,outcomes <span class="sc">==</span> <span class="st">"cases"</span> ) <span class="sc">|&gt;</span> <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">max</span>(date))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>race_data <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"RACE"</span>,outcomes <span class="sc">==</span> <span class="st">"cases"</span> ) <span class="sc">|&gt;</span> <span class="fu">filter</span>(date <span class="sc">==</span> <span class="fu">max</span>(date))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>race_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 5
+  group                                     date       category outcomes   count
+  &lt;chr&gt;                                     &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;
+1 White                                     2024-12-31 RACE     cases    1817150
+2 Black or African American                 2024-12-31 RACE     cases     401950
+3 Other/Multiracial                         2024-12-31 RACE     cases     194105
+4 Asian                                     2024-12-31 RACE     cases      28458
+5 American Indian or Alaska Native          2024-12-31 RACE     cases       4897
+6 Native Hawaiian or Other Pacific Islander 2024-12-31 RACE     cases       2472
+7 Unknown                                   2024-12-31 RACE     cases     369879</code></pre>
+</div>
 </div>
 <p>Open population table and tidy</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/population_2022.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"../data/population_2022.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 96 Columns: 5
 ── Column specification ────────────────────────────────────────────────────────
@@ -184,31 +232,91 @@ num (1): Tennessee!!Estimate
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> population_2022 <span class="sc">|&gt;</span>  <span class="fu">slice</span>(<span class="fu">c</span>(<span class="dv">39</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">46</span>, <span class="dv">54</span>, <span class="dv">60</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"Label (Grouping)"</span>, <span class="st">"Tennessee!!Estimate"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>( <span class="at">group =</span> <span class="st">"Label (Grouping)"</span>, </span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">population =</span> <span class="st">"Tennessee!!Estimate"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">str_squish</span>(group),</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">as.numeric</span>(population)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ) </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> population_2022  <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">case_when</span>(</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"White"</span> <span class="sc">~</span> <span class="st">"White"</span>,</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Black or African American"</span> <span class="sc">~</span> <span class="st">"Black or African American"</span>,</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"American Indian and Alaska Native"</span> <span class="sc">~</span> <span class="st">"American Indian or Alaska Native"</span>,</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Asian"</span> <span class="sc">~</span> <span class="st">"Asian"</span>,</span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Native Hawaiian and Other Pacific Islander"</span> <span class="sc">~</span> <span class="st">"Native Hawaiian or Other Pacific Islander"</span>,</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Two or More Races"</span> <span class="sc">~</span> <span class="st">"Other/Multiracial"</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  ) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> population_2022 <span class="sc">|&gt;</span>  <span class="fu">slice</span>(<span class="fu">c</span>(<span class="dv">39</span>, <span class="dv">40</span>, <span class="dv">41</span>, <span class="dv">46</span>, <span class="dv">54</span>, <span class="dv">60</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">"Label (Grouping)"</span>, <span class="st">"Tennessee!!Estimate"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>( <span class="at">group =</span> <span class="st">"Label (Grouping)"</span>, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">population =</span> <span class="st">"Tennessee!!Estimate"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">str_squish</span>(group),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">population =</span> <span class="fu">as.numeric</span>(population)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>population_2022 <span class="ot">&lt;-</span> population_2022  <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">group =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"White"</span> <span class="sc">~</span> <span class="st">"White"</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Black or African American"</span> <span class="sc">~</span> <span class="st">"Black or African American"</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"American Indian and Alaska Native"</span> <span class="sc">~</span> <span class="st">"American Indian or Alaska Native"</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Asian"</span> <span class="sc">~</span> <span class="st">"Asian"</span>,</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Native Hawaiian and Other Pacific Islander"</span> <span class="sc">~</span> <span class="st">"Native Hawaiian or Other Pacific Islander"</span>,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">"Two or More Races"</span> <span class="sc">~</span> <span class="st">"Other/Multiracial"</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>population_2022</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  group                                     population
+  &lt;chr&gt;                                          &lt;dbl&gt;
+1 White                                        5150306
+2 Black or African American                    1098360
+3 American Indian or Alaska Native               14856
+4 Asian                                         133729
+5 Native Hawaiian or Other Pacific Islander       5882
+6 Other/Multiracial                             485050</code></pre>
+</div>
 </div>
 <p>Join the data and arrange in descending order</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>race_joined <span class="ot">&lt;-</span> race_data <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population_2022, <span class="at">by =</span> <span class="st">"group"</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">case_rate_per_100k =</span> (count <span class="sc">/</span> population) <span class="sc">*</span> <span class="dv">100000</span>) <span class="sc">|&gt;</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(case_rate_per_100k))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>race_joined <span class="ot">&lt;-</span> race_data <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(population_2022, <span class="at">by =</span> <span class="st">"group"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">case_rate_per_100k =</span> (count <span class="sc">/</span> population) <span class="sc">*</span> <span class="dv">100000</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(case_rate_per_100k))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>race_joined</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 7
+  group        date       category outcomes  count population case_rate_per_100k
+  &lt;chr&gt;        &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;     &lt;dbl&gt;      &lt;dbl&gt;              &lt;dbl&gt;
+1 Native Hawa… 2024-12-31 RACE     cases    2.47e3       5882             42027.
+2 Other/Multi… 2024-12-31 RACE     cases    1.94e5     485050             40018.
+3 Black or Af… 2024-12-31 RACE     cases    4.02e5    1098360             36595.
+4 White        2024-12-31 RACE     cases    1.82e6    5150306             35282.
+5 American In… 2024-12-31 RACE     cases    4.90e3      14856             32963.
+6 Asian        2024-12-31 RACE     cases    2.85e4     133729             21280.
+7 Unknown      2024-12-31 RACE     cases    3.70e5         NA                NA </code></pre>
+</div>
+</div>
+</section>
+<section id="did-covid-19-death-rates-differ-by-gender-relative-to-case-counts" class="level2">
+<h2 class="anchored" data-anchor-id="did-covid-19-death-rates-differ-by-gender-relative-to-case-counts">Did COVID-19 death rates differ by gender relative to case counts?</h2>
+<p>Filter for gender only</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gender_data <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"SEX"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>         outcomes <span class="sc">==</span> <span class="fu">c</span>(<span class="st">"cases"</span>, <span class="st">"deaths"</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>gender_data</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 756 × 5
+   group   date       category outcomes   count
+   &lt;chr&gt;   &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;
+ 1 Female  2024-12-31 SEX      cases    1553745
+ 2 Female  2024-12-31 SEX      deaths     14442
+ 3 Unknown 2024-12-31 SEX      cases      18050
+ 4 Unknown 2024-12-31 SEX      deaths        22
+ 5 Male    2024-12-28 SEX      cases    1246737
+ 6 Male    2024-12-28 SEX      deaths     16689
+ 7 Female  2024-12-21 SEX      cases    1552063
+ 8 Female  2024-12-21 SEX      deaths     14442
+ 9 Unknown 2024-12-21 SEX      cases      18047
+10 Unknown 2024-12-21 SEX      deaths        22
+# ℹ 746 more rows</code></pre>
+</div>
+</div>
+<p>Get the recent total</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>common_date <span class="ot">&lt;-</span> COVID19_Outcomes_clean <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(category <span class="sc">==</span> <span class="st">"SEX"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>         outcomes <span class="sc">==</span> <span class="st">"cases"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_date =</span> <span class="fu">max</span>(date)) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">common_date =</span> <span class="fu">min</span>(max_date)) <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(common_date)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 </section>

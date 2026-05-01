@@ -24,6 +24,7 @@ Convert Date to proper format
 COVID19_Outcomes_Tennessee <- COVID19_Outcomes_Tennessee |>
   mutate(
     WEEK_END_DATE = as.Date(WEEK_END_DATE, format = "%Y %b %d %I:%M:%S %p"))
+COVID19_Outcomes_Tennessee
 ```
 
 Clean column names and pivot longer
@@ -45,6 +46,7 @@ COVID19_Outcomes_clean <- COVID19_Outcomes_clean |>
     names_to = "outcomes",
     values_to = "count"
   )
+COVID19_Outcomes_clean
 ```
 
 # Questions
@@ -56,6 +58,7 @@ Create a table with race only
 ```{r}
 race_data <- COVID19_Outcomes_clean |>
   filter(category == "RACE",outcomes == "cases" ) |> filter(date == max(date))
+race_data
 ```
 
 Open population table and tidy
@@ -80,6 +83,7 @@ population_2022 <- population_2022  |>  mutate(
       group == "Two or More Races" ~ "Other/Multiracial"
     )
   ) 
+population_2022
 ```
 
 Join the data and arrange in descending order
@@ -89,4 +93,28 @@ race_joined <- race_data |>
   left_join(population_2022, by = "group") |> 
   mutate(case_rate_per_100k = (count / population) * 100000) |>
   arrange(desc(case_rate_per_100k))
+race_joined
+```
+
+## Did COVID-19 death rates differ by gender relative to case counts?
+
+Filter for gender only
+
+```{r}
+gender_data <- COVID19_Outcomes_clean |>
+  filter(category == "SEX",
+         outcomes == c("cases", "deaths"))
+gender_data
+```
+
+Get the recent total
+
+```{r}
+common_date <- COVID19_Outcomes_clean |>
+  filter(category == "SEX",
+         outcomes == "cases") |>
+  summarise(max_date = max(date)) |>
+  summarise(common_date = min(max_date)) |>
+  pull(common_date)
+
 ```
