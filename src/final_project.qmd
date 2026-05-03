@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-## COVID Outcomes in Tennessee 2020-2024
+# COVID Outcomes in Tennessee 2020-2024
 
 ## Load packages and download files
 
