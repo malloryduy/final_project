@@ -188,3 +188,249 @@ Save figure to directory
 ```{r}
 ggsave("../figures/covid_race_trends.png", plot = plot, width = 8, height = 5)
 ```
+
+# Which groups experiences disproportionately higher death rates relative to cases?
+
+Start with the cleaned dataset
+
+Keep only the race data and only the outcomes I need
+
+Keep only the important columns. I kept: group (for the racial group), date (for the week), outcomes (to show whether the number is cases or deaths), count (for the actual value).
+
+Reshape the data so cases and deaths are in separate columns. Originally the cases and deaths were stacked in one column under outcomes but this step changes the data so each row has one column for cases and one column for deaths. Important because I need both values in the same row to calculate the death rate relative to cases.
+
+This creates a new column called case_fatality_rate. This formula is deaths divided by cases then multiplied by 100. This gives the percent of COVID cases that resulted in death for each racial group.
+
+```{r}
+race_cases_deaths <- COVID19_Outcomes_clean |>
+  filter(category == "RACE", outcomes %in% c("cases", "deaths")) |>
+  select(group, date, outcomes, count) |>
+  pivot_wider(names_from = outcomes, values_from = count) |>
+  mutate(case_fatality_rate = (deaths / cases) * 100)
+
+```
+
+Keep only the most recent data for each group. I grouped the data by racial group, then kept only the most recent date for each one. I did this so I would be comparing the latest available values instead of older weeks.
+
+Remove the grouping. This just returns the dataset to normal so the next step works cleanly.
+
+Sort from highest to lowest, This puts the racial group with the highest case fatality rate at the top.
+
+```{r}
+race_cases_deaths_latest <- race_cases_deaths |> group_by(group) |> filter(date == max(date)) |> ungroup() |> arrange(desc(case_fatality_rate))
+
+```
+
+Print final table. This lets me see which groups had highest death rates relative to cases.
+
+```{r}
+race_cases_deaths_latest
+```
+
+Make a pretty graph!
+
+Start the graph using your final cleaned dataset.
+
+Put racial groups on the x axis and order them by case fatality rate.
+
+Use case fatality rate as the y-value.
+
+Draw the "stick" part of the lollipop stick graph from 0 to each group's rate.
+
+Add the dots at the end of each of the sticks.
+
+Adds the actual case fatality rate number beside each dot, rounded to 2 decimals.
+
+Turn the graph sideways so the group names are easier to read.
+
+Add the title, subtitle, and axis labels.
+
+Give the graph a clean look and make the title and axis labels bold.
+
+```{r}
+   ggplot(race_cases_deaths_latest,
+       aes(x = reorder(group, case_fatality_rate),
+           y = case_fatality_rate)) +
+  geom_segment(aes(xend = group, y = 0, yend = case_fatality_rate),
+               linewidth = 1.2) +
+  geom_point(size = 4) +
+  geom_text(aes(label = round(case_fatality_rate, 2)),
+            hjust = -0.3,
+            size = 3.5) +
+  coord_flip() +
+  labs(
+    title = "COVID-19 Case Fatality Rate by Race",
+    subtitle = "Deaths relative to confirmed cases, most recent available data",
+    x = "Racial group",
+    y = "Case fatality rate (%)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold")
+  )
+```
+
+If you want a more fun pretty graph:
+
+use Colors() to see all of the colors!
+
+Color each point based on its value.
+
+This is what creates the gradient (low = blue, high = pink)
+
+```{r}
+ggplot(race_cases_deaths_latest,
+       aes(x = reorder(group, case_fatality_rate),
+           y = case_fatality_rate,
+           color = case_fatality_rate)) +
+
+  geom_segment(aes(xend = group, y = 0, yend = case_fatality_rate),
+               linewidth = 1.2,
+               color = "gray30") +
+
+  geom_point(size = 5) +
+
+  geom_text(aes(label = round(case_fatality_rate, 2)),
+            hjust = -0.4,
+            size = 3.5,
+            color = "black") +
+
+  scale_color_gradient(low = "cornflowerblue", high = "lavenderblush") +
+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+
+  coord_flip() +
+
+  labs(
+    title = "COVID-19 Case Fatality Rate by Race",
+    subtitle = "Deaths relative to confirmed cases, most recent available data",
+    x = "Racial group",
+    y = "Case fatality rate (%)",
+    color = "Rate (%)"
+  ) +
+
+  theme_minimal() +
+
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.y = element_blank()
+  )
+```
+
+# Which groups has the highest mortality rates after adjusting for population size? 
+
+I filtered the data to only race and deaths, then joined it with population data. After that, I calculated the death rate per 100,000 people by dividing deaths by population and multiplying by 100,000. Then I kept the most recent date for each racial group and sorted from highest to lowest.
+
+Step 1: Start with the cleaned COVID dataset again. I used COVID19_Outcomes_clean because it already contains the COVID data in a format I can filter easily.
+
+Step 2:(filter) Keep only race data and only deaths. For this question, I do not need cases or hospitalizations. I only need deaths because I am calculating mortality rates.
+
+Step 3: (left_join): This joins the COVID death data with my population dataset using the race group name. After this step, each row has: the racial group, the date, the number of deaths, the population for that group. This is necessary because I cannot adjust for population size unless population is included.
+
+Step 4: (mutate): This creates a new column called death_rate_per_100k. The formula is: deaths divided by population, then multiplied by 100,000. I multiply by 100,000 because that is a standard way to compare rates across groups of different sizes.
+
+```{r}
+race_death_rates <- COVID19_Outcomes_clean |> filter(category == "RACE", outcomes == "deaths") |> left_join(population_2022, by = "group") |> mutate(death_rate_per_100k = (count / population) * 100000)
+```
+
+Step 5: keep only the most recent data for each group. Again, I grouped by racial group and kept only the latest date so I would be comparing the most current data.
+
+Step 6: (ungroup): remove grouping. This resets the data frame back to normal.
+
+Step 7: Sort from highest to lowest. This places the group with the highest mortality rate per 100,000 at the top.
+
+Step 8: print final table. This shows which racial groups had the highest mortality rates after accounting for pop. size.
+
+```{r}
+race_death_rates_latest <- race_death_rates |> group_by(group) |> filter(date == max(date)) |> ungroup() |> arrange(desc(death_rate_per_100k))
+
+race_death_rates_latest
+```
+
+Now if you want a super pretty fun graph:
+
+-   use the cleaned dataset
+
+-   put racial group on the x axis
+
+-   sort from lowest to highest death rate
+
+-   the y axis shows deaths per 100k people
+
+-   colors each point based on how high the death rate is
+
+-   make the higher death rates have bigger circles
+
+-   draw a line from 0 to the value of each group
+
+-   make the line thicker and light blue
+
+-   add a circle at the end of each line
+
+-   display value next to each point
+
+-   move the label slightly to the right
+
+-   set size and color of text
+
+-   add color gradient: pink is low values, purple is high.
+
+```{r}
+
+race_death_rates_latest <- race_death_rates |>
+  group_by(group) |>
+  filter(date == max(date)) |>
+  ungroup() |>
+  filter(!is.na(death_rate_per_100k)) |>
+  filter(group != "Unknown") |>
+  arrange(desc(death_rate_per_100k))
+
+ggplot(race_death_rates_latest,
+       aes(x = reorder(group, death_rate_per_100k),
+           y = death_rate_per_100k,
+           color = death_rate_per_100k,
+           size = death_rate_per_100k)) +
+
+  geom_segment(aes(xend = group,
+                   y = 0,
+                   yend = death_rate_per_100k),
+               linewidth = 1.5,
+               color = "honeydew2") +
+
+  geom_point(alpha = 0.9) +
+
+  geom_text(aes(label = round(death_rate_per_100k, 1)),
+            hjust = -0.5,
+            size = 3.7,
+            color = "black") +
+
+  scale_color_gradient(low = "palevioletred",
+                       high = "lavender") +
+
+  scale_size(range = c(4, 9),
+             guide = "none") +
+
+  scale_y_continuous(expand = expansion(mult = c(0, 0.25))) +
+
+  coord_flip() +
+
+  labs(
+    title = "COVID-19 Death Rate by Race",
+    subtitle = "Population-adjusted deaths per 100,000 people",
+    x = "Racial group",
+    y = "Deaths per 100,000 people",
+    color = "Death rate"
+  ) +
+
+  theme_minimal() +
+
+  theme(
+    plot.title = element_text(face = "bold", size = 17),
+    plot.subtitle = element_text(size = 12),
+    axis.title = element_text(face = "bold"),
+    panel.grid.major.y = element_blank()
+  )
+```
