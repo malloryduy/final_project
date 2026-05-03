@@ -153,6 +153,7 @@ Filter the data set to only focus on race and case data
 ```{r}
 race_data <- COVID19_Outcomes_clean |>
   filter(category == "RACE", outcomes == "cases")
+race_data
 ```
 
 Summarize cases by race and date. We combine repeated entries so each race has one total case value per week
@@ -164,6 +165,7 @@ race_summary <- race_data |>
     cases = sum(count, na.rm = TRUE),
     .groups = "drop"
   )
+race_summary
 ```
 
 Create a time trend line graph
@@ -178,6 +180,7 @@ plot <- ggplot(race_summary, aes(x = date, y = cases, color = group, group = gro
     y = "Cases",
     color = "Race"
   )
+plot
 ```
 
 Save figure to directory
