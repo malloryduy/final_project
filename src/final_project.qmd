@@ -134,7 +134,7 @@ gender_rates <- gender_rates |>
   )
 ```
 
-create a visualization
+Create a visualization
 
 ```{r}
 ggplot(gender_rates, aes(x = group, y = death_rate_percent)) +
@@ -144,4 +144,44 @@ ggplot(gender_rates, aes(x = group, y = death_rate_percent)) +
     x = "Gender",
     y = "Death Rate (%)"
   )
+```
+
+## How did COVID-19 case rates change over time?
+
+Filter the data set to only focus on race and case data
+
+```{r}
+race_data <- COVID19_Outcomes_clean |>
+  filter(category == "RACE", outcomes == "cases")
+```
+
+Summarize cases by race and date. We combine repeated entries so each race has one total case value per week
+
+```{r}
+race_summary <- race_data |>
+  group_by(group, date) |>
+  summarise(
+    cases = sum(count, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+Create a time trend line graph
+
+```{r}
+plot <- ggplot(race_summary, aes(x = date, y = cases, color = group, group = group)) +
+  geom_line(linewidth = 1) +
+  theme_minimal() +
+  labs(
+    title = "COVID-19 Case Trends Over Time by Race in Tennessee",
+    x = "Date",
+    y = "Cases",
+    color = "Race"
+  )
+```
+
+Save figure to directory
+
+```{r}
+ggsave("../figures/covid_race_trends.png", plot = plot, width = 8, height = 5)
 ```
