@@ -132,6 +132,7 @@ gender_rates <- gender_rates |>
   mutate(
     death_rate_percent = death_rate * 100
   )
+gender_rates
 ```
 
 Create a visualization
@@ -207,7 +208,7 @@ race_cases_deaths <- COVID19_Outcomes_clean |>
   select(group, date, outcomes, count) |>
   pivot_wider(names_from = outcomes, values_from = count) |>
   mutate(case_fatality_rate = (deaths / cases) * 100)
-
+race_cases_deaths
 ```
 
 Keep only the most recent data for each group. I grouped the data by racial group, then kept only the most recent date for each one. I did this so I would be comparing the latest available values instead of older weeks.
@@ -218,7 +219,6 @@ Sort from highest to lowest, This puts the racial group with the highest case fa
 
 ```{r}
 race_cases_deaths_latest <- race_cases_deaths |> group_by(group) |> filter(date == max(date)) |> ungroup() |> arrange(desc(case_fatality_rate))
-
 ```
 
 Print final table. This lets me see which groups had highest death rates relative to cases.
@@ -320,7 +320,7 @@ ggplot(race_cases_deaths_latest,
   )
 ```
 
-# Which groups has the highest mortality rates after adjusting for population size? 
+# Which groups has the highest mortality rates after adjusting for population size?
 
 I filtered the data to only race and deaths, then joined it with population data. After that, I calculated the death rate per 100,000 people by dividing deaths by population and multiplying by 100,000. Then I kept the most recent date for each racial group and sorted from highest to lowest.
 
